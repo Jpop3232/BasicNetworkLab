@@ -1,44 +1,38 @@
-# BasicNetworkLab
-This project configures two VMs to the same internal network and documents basic TCP/IP and DNS issues and simple troubleshooting.
-To set up this project ensure that the two VMs are on the same NAT network. For this project I made the NAT network jordNetwork, while 
-Oracle VirtualBox has its own premade IPv4 prefix, I wanted to have a bit of fun and make my own IPv4 prefix which is just 192.167.100.0
-applications needed to be installed on both VMs for this project: 
-net-tools
-traceroute
-Also ensure that net-tools and traceroute is installed onto both VMs.
-Configuration for VM CMSC430:
-<img width="1367" height="727" alt="image" src="https://github.com/user-attachments/assets/0f7bc8af-93c7-4842-a565-98abaefc753e" />
-Configuration for secondVM: 
-<img width="815" height="555" alt="image" src="https://github.com/user-attachments/assets/25cd8d7d-848e-40d8-8a08-cee5cab313c1" />
-To show that they are connected to the same network I am going to ping each machine from its sister machine (i.e. ping secondVM from CMSC430 and ping CMSC430 from secondVM). It may be redundant to ping on both VMs, but I'm having fun playing with them so no harm in the redundancy. I let both machines ping each other for ~5 seconds just to give a brief demonstration. 
-CMSC430 pinging secondVM:
-<img width="1122" height="491" alt="image" src="https://github.com/user-attachments/assets/b0f75042-eb55-4c89-bdbf-d7d7d9a950e8" />
-secondVM pinging CMSC430:
-<img width="652" height="310" alt="image" src="https://github.com/user-attachments/assets/c5a7f1ee-6a01-460f-9473-cd9ff1abbaf1" />
-
-Now obviously there were no issues with the two VMs pinging each other. However there can be issues that come up that prevent two servers from connecting, one of them being that a server has a firewall up. For the sake of demonstration I will put up a firewall on secondVM and try to ping CMSC430 from it.
-I changed the rules of the ufw on secondVM to deny both incoming and outgoing traffic, I also closed down its ports for both 22 and 22/tcp
-<img width="627" height="287" alt="image" src="https://github.com/user-attachments/assets/5b66fc2e-4f2e-407d-a08d-ac0fa3f796dd" />
-
-Now, whenever I try to ping CMSC430 this is what occurs: 
-<img width="717" height="127" alt="image" src="https://github.com/user-attachments/assets/5e9f2170-d66d-4944-89d1-9bdbe3c5b389" />
-Due to the firewall I put in place on secondVM, any information that CMSC430 puts out is not reccived. A simple fix would be to just disable the firewall. 
-Example of firewall being disabled and what ping looks like: 
-<img width="637" height="432" alt="image" src="https://github.com/user-attachments/assets/47a86f97-a342-4502-bc8f-68ac30c1bd2b" />
-Now, I'll use traceroute to examine the paths both servers take to connect to each other through the network.
-path secondVM takes to get to CMSC430: 
-<img width="776" height="120" alt="image" src="https://github.com/user-attachments/assets/362f0e85-5b6d-45a7-96b5-b504bf334006" />
-path CMSC430 takes to get to secondVM: 
-<img width="750" height="95" alt="image" src="https://github.com/user-attachments/assets/4e33d9dc-4358-4ac7-8ee9-3a0d60fd4cb0" />
-Seen here, both routes only take one hop, this makes sense as there is only one other server in the network, so there is only one possible hop that can be preformed. Even in simple networks like this one issues can show up such a strict firewall preventing one server accessing another, leading to continually trying to make a hop that fails. Which looks like stars as there is no information about the hops to report on.
-<img width="757" height="712" alt="image" src="https://github.com/user-attachments/assets/dd89fdad-f39e-4b19-bd3f-737735cdc1c3" />
-Which, like the ping issue can be resolved by either disabling the firewall.
-Another issue that can prevent two servers from communicating in a network is the host that the server is trying to reach is unreachable. This is demonstrated when I run traceroute in secondVM to CMSC430, the hop gives me a !H, indicating the host is unreachable. This makes sense as I have powered off CMSC430. 
-<img width="772" height="182" alt="image" src="https://github.com/user-attachments/assets/39c8a9bd-a876-4c60-8497-8ac261022d3a" />
-<img width="867" height="176" alt="image" src="https://github.com/user-attachments/assets/46770d01-f6e6-4ab7-9a1e-8b4aab86caca" />
-While an unreachable host can be caused by a number of issues, in this instance the solution was as simple as turning on CMSC430
-(Comparsion of unreachable host to reachable host)
-<img width="871" height="177" alt="image" src="https://github.com/user-attachments/assets/4ade1cae-91da-4d0f-95b5-d827425710c6" />
-
-
-
+# Basic Network Lab
+## Purpose of this Project
+This project was created to simulate a very simple network of two servers, and to showcase how to troubleshoot and address any issues that may occur that prevents servers from connecting within a network.
+## Setup 
+This project is ran using two Ubuntu VMs from Oracle VirtualBox Manager. For the sake of simplicity they are on a shared NAT network (jordNetwork) with a custom IP address (192.167.100.0). The VMs used are labled CMSC430 (197.167.100.3) and secondVM(197.167.100.3). Both VMs need the applications net-tools and traceroute installed in order preform this project. An optional application is gufw, it is not needed to run this project but if you want to manage ufw with a gui then it is reccomended.  
+## Testing Connectivity 
+the two methods used to test the connectivity of the servers within the network is to PING or to Traceroute. 
+### Ping
+Ping measures the amount of time it takes for the smallest packet of data to get from one server to another, measured in milisecods. The lower the ping, the better the latency and the faster the connection. Getting as close to zero is the goal, but even in the 20-50 ms range is servisable in daily activities such as streaming and calls. To test ping, simply open the command terminal and type "ping *IP address of the server you want to connect to*" demonstrated on the servers below:  
+<img width="637" height="327" alt="image" src="https://github.com/user-attachments/assets/beaa2c04-a12d-4997-afac-88009fb38dbb" />  
+  _server cmsc430 command "ping 192.167.100.4"_  
+  <img width="641" height="285" alt="image" src="https://github.com/user-attachments/assets/b09ebbb2-4a7e-45ed-8b6d-5f1b2f3b657e" />  
+  _server secondVM command "ping 192.167.100.3"_  
+### Traceroute
+Traceroute is an application that records the path that packages take to get from one server to the next. It shows what the set maximum amount of hops are allowed within the network, and the size of the packets sent out from a server. When a server requests to document the path to another server from traceroute, it will display each hop, the IP address of where the packet is after each hop, and the amount of time it takes for that packet to make a round trip in ms, with three packets sent to give an average round-trip time. To see the traceroute from one server to another, input the command "traceroute *IP address/FQDNS of the server you want to connect to*" demonstrated below:  
+<img width="747" height="75" alt="image" src="https://github.com/user-attachments/assets/f0f057a2-6866-4a50-8105-d102a907d133" />  
+_server CMSC430 command "traceroute 192.167.100.4"_  
+### SS
+The ss, short for server socket, command in linux allows the user of a server to see the conditions of the network sockets on said server. Typing in ss shows all sockets and their conditions, but additional commands can be added to show more specific data, such as only showing TCP or UDP sockets, showing only listening sockets, and so on. The ss command can be helpful in showing where in a server that bottlenecks are occuring by checking unusual data queues in reciving and sending. Below is the summary statistics of both servers:  
+<img width="586" height="281" alt="image" src="https://github.com/user-attachments/assets/add000e1-1fb0-4d2c-99ef-0a9ef54e454c" />  
+_secondVM ss summary statistics_  
+<img width="597" height="237" alt="image" src="https://github.com/user-attachments/assets/f067ac57-1901-4b49-b09f-e9ba03f0dd8d" />  
+_cmsc430 summary statsitics_  
+## Troubleshooting
+### Example #1
+For this example I disconnected the server cmsc430 from the network. Whenever secondVM tried to ping cmsc430, it showed that secondVM could send out data, but that data was not recived by the host, three errors also occured. When running the traceroute it showed a failed hop with the error code !H, which means that the host is unreachable. In the case that I was not aware that server cmsc430 was offline, using the information gained from the ping and traceroute (information was successfully being sent but not recived and the host is unreachable error code) I could determine that the problem was not with secondVM and was instead an issue with cmsc430. Knowing that, I can focus on trying to see what is wrong with cmsc430 instead of spending time trying to fix secondVM which has no issues.   
+<img width="896" height="302" alt="image" src="https://github.com/user-attachments/assets/8d1829ed-6400-4125-a5ee-1fc5d9f7031d" />  
+_attempted ping and traceroute from secondVM_  
+### Example #2
+For this example I set the firewall on secondVM to deny both incoming and outgoing data, which leads to a signfigantly different message, ping shows data was sent out but not recived and the traceroute attempt only shows a message stating that there is no permission to send data. In the case that we were not aware of this strict firewall being up, knowing that data can not even be sent indicates that the issue is on secondVM's side, and knowing that the ping attempted to send data shows that there is network connectivity. 
+<img width="757" height="240" alt="image" src="https://github.com/user-attachments/assets/f723ab02-d67e-4dd7-882c-b5f8082e9f36" />  
+_attempted ping and traceroute from secondVM_  
+### Example #3
+For this example I disconnected secondVM from the network. Attempts to ping and traceroute gave back the statement "connect: network is unreachable". This error message is simple and straightforward and tells me that it is secondVM that is disconnected from the network, narrowing down the checks I need to make.  
+<img width="800" height="152" alt="image" src="https://github.com/user-attachments/assets/49fd65b1-8c2d-49c5-918e-c4280a31383f" />  
+_attempted ping and traceroute from secondVM_
+# Takeaway
+Ping, traceroute, and the ss comand are all extremely helpful in acting as a diagnostic tool for network connectivity issues. Knowing how to use them can prevent waisting hours attempting solutions that will not fix the existing problem. They make troubleshooting signifigantly simpler and intutive.

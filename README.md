@@ -4,7 +4,7 @@ This project was created to simulate a very simple network of two servers, and t
 ## Setup 
 This project is ran using two Ubuntu VMs from Oracle VirtualBox Manager. For the sake of simplicity they are on a shared NAT network (jordNetwork) with a custom IP address (192.167.100.0). The VMs used are labled CMSC430 (197.167.100.3) and secondVM(197.167.100.3). Both VMs need the applications net-tools and traceroute installed in order preform this project. An optional application is gufw, it is not needed to run this project but if you want to manage ufw with a gui then it is reccomended.  
 ## Testing Connectivity 
-the two methods used to test the connectivity of the servers within the network is to PING or to Traceroute. 
+Two methods that can used to test the connectivity of the servers within the network is to PING or to Traceroute. 
 ### Ping
 Ping measures the amount of time it takes for the smallest packet of data to get from one server to another, measured in milisecods. The lower the ping, the better the latency and the faster the connection. Getting as close to zero is the goal, but even in the 20-50 ms range is servisable in daily activities such as streaming and calls. To test ping, simply open the command terminal and type "ping *IP address of the server you want to connect to*" demonstrated on the servers below:  
 <img width="637" height="327" alt="image" src="https://github.com/user-attachments/assets/beaa2c04-a12d-4997-afac-88009fb38dbb" />  
